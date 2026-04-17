@@ -179,7 +179,7 @@ UsersRouter.get('/get-coins-details/:user_id', async (req, res) => {
   
 
 //get the referral name
-UsersRouter.post('/get-ref-name/:user_id', async (req, res) => {
+UsersRouter.get('/get-ref-name/:user_id', async (req, res) => {
     try {
         const user_id = req.params.user_id;
 
