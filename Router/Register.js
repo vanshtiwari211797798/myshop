@@ -133,7 +133,7 @@ router.post('/register', async (req, res) => {
 
         return res.status(201).json({
             msg: "User Registered Successfully!",
-            parent_id: finalParent,
+            parent_id: user_id,
             position: finalPosition
         });
 
