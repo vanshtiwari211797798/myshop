@@ -150,7 +150,7 @@ async function saveUser(res, userModel, data) {
     return res.status(201).json({
         msg: "User Registered Successfully!",
         parent_id: data.user_id,
-        user_id: user_id, // <--- Nayi ID yahan se bhi bhejein
+        user_id: data.user_id, // <--- Nayi ID yahan se bhi bhejein
         position: data.position
     });
 }
