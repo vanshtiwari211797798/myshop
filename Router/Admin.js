@@ -2,6 +2,7 @@ const express = require('express');
 const adminRouter = express.Router();
 const multer = require('multer');
 const productModel = require('../Models/Products');
+const WalletModel = require('../Models/Wallet');
 
 
 // storage
@@ -79,6 +80,27 @@ adminRouter.get('/get-product', async (_, res) => {
 })
 
 
+//UPDATE THE WALLET RECHARGE STATUS
+adminRouter.get('/update-recharge-status/:id/:status', async (req, res) => {
+    try {
+        const { id, status } = req.params;
+
+        if (!id || !status) {
+            return res.status(400).json({ msg: "All fields is required !" });
+        }
+
+        $is_Updated = await WalletModel.findByIdAndUpdate(id, { status: status }, { new: true });
+
+        if (!$is_Updated) {
+            return res.status(409).json({msg:"Unable to update the status !"})
+        }
+
+        return res.status(200).json({msg:"Updated successfully !"})
+
+    } catch (error) {
+        console.error(`Error from the update recharge sttaus from the admin and error is the ${error}`)
+    }
+})
 
 
 
