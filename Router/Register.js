@@ -134,6 +134,7 @@ router.post('/register', async (req, res) => {
         return res.status(201).json({
             msg: "User Registered Successfully!",
             parent_id: finalParent,
+            user_id: user_id, // <--- Nayi ID yahan se bhi bhejein
             position: finalPosition
         });
 
@@ -149,6 +150,7 @@ async function saveUser(res, userModel, data) {
     return res.status(201).json({
         msg: "User Registered Successfully!",
         parent_id: data.user_id,
+        user_id: user_id, // <--- Nayi ID yahan se bhi bhejein
         position: data.position
     });
 }
