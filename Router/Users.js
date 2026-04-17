@@ -178,6 +178,30 @@ UsersRouter.get('/get-coins-details/:user_id', async (req, res) => {
 })
   
 
+//get the referral name
+UsersRouter.post('/get-ref-name/:user_id', async (req, res) => {
+    try {
+        const user_id = req.params.user_id;
 
+        if(!user_id){
+            return res.status(400).json({msg:"All fields is required !"});
+        }
+
+        //if user_id is received then 
+
+        const fetch_name = await userModel.findOne({user_id:user_id},{
+            name:1,_id:0
+        });
+
+        if(!fetch_name){
+            return res.status(404).json({msg:"Invalid user_id !"});
+        }
+
+        return res.status(200).json({msg:"Data fetched successfully !", data:fetch_name});
+
+    } catch (error) {
+        console.error(`Error from the get the referral name and error is the ${error}`);
+    }
+})
 
 module.exports = UsersRouter;

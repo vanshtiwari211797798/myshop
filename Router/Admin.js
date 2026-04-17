@@ -16,6 +16,7 @@ const storage = multer.diskStorage({
 
 const uploadProducts = multer({ storage: storage });
 
+
 // 👇add product api
 adminRouter.post(
     '/add-products',
