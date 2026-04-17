@@ -13,12 +13,12 @@ const CartModel = require('../Models/AddToCart');
 //user login api 
 UsersRouter.post('/login', async (req, res) => {
     try {
-        const {email, password} = req.body;
-        if(!email || !password){
+        const {user_id, password} = req.body;
+        if(!user_id || !password){
             return res.status(400).json({msg:"All fields is required"});
         }
 
-        const is_exist = await userModel.findOne({email:email});
+        const is_exist = await userModel.findOne({user_id:user_id});
         if(!is_exist){
             return res.status(409).json({msg:"User not Registered !"});
         }
