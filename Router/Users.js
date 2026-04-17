@@ -5,33 +5,47 @@ const jwt = require('jsonwebtoken');
 const secret_key = process.env.SECRET_KEY;
 const userModel = require('../Models/userModel');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
 const productModel = require('../Models/Products');
 const CartModel = require('../Models/AddToCart');
+const WalletModel = require('../Models/Wallet');
 
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+
+const uploadPayment_SS = multer({ storage: storage });
 
 
 //user login api 
 UsersRouter.post('/login', async (req, res) => {
     try {
-        const {user_id, password} = req.body;
-        if(!user_id || !password){
-            return res.status(400).json({msg:"All fields is required"});
+        const { user_id, password } = req.body;
+        if (!user_id || !password) {
+            return res.status(400).json({ msg: "All fields is required" });
         }
 
-        const is_exist = await userModel.findOne({user_id:user_id});
-        if(!is_exist){
-            return res.status(409).json({msg:"User not Registered !"});
+        const is_exist = await userModel.findOne({ user_id: user_id });
+        if (!is_exist) {
+            return res.status(409).json({ msg: "User not Registered !" });
         }
 
         //check password is currect or not 
         const is_password_right = await bcrypt.compare(password, is_exist.password);
-        if(!is_password_right){
-            return res.status(401).json({msg:"Invalid Creadential"});
+        if (!is_password_right) {
+            return res.status(401).json({ msg: "Invalid Creadential" });
         }
 
-        
-        const jwt_token = jwt.sign({id:is_exist._id}, secret_key, {expiresIn:"7d"});
-        return res.status(200).json({msg:'User Login Successfully !', token:jwt_token, data:is_exist});
+
+        const jwt_token = jwt.sign({ id: is_exist._id }, secret_key, { expiresIn: "7d" });
+        return res.status(200).json({ msg: 'User Login Successfully !', token: jwt_token, data: is_exist });
 
 
     } catch (error) {
@@ -168,7 +182,7 @@ UsersRouter.get('/get-coins-details/:user_id', async (req, res) => {
         if (get_coin_details > 0) {
             //calculate the off percentage
             const off_percentage_is = (get_coin_details * 10) / 100;
-            return res.status(200).json({ msg: "Success", coin: get_coin_details, currentcoin:off_percentage_is });
+            return res.status(200).json({ msg: "Success", coin: get_coin_details, currentcoin: off_percentage_is });
         }
 
 
@@ -176,32 +190,90 @@ UsersRouter.get('/get-coins-details/:user_id', async (req, res) => {
         console.error(`Error from the getting current coins details and error is the ${error}`)
     }
 })
-  
+
 
 //get the referral name
 UsersRouter.get('/get-ref-name/:user_id', async (req, res) => {
     try {
         const user_id = req.params.user_id;
 
-        if(!user_id){
-            return res.status(400).json({msg:"All fields is required !"});
+        if (!user_id) {
+            return res.status(400).json({ msg: "All fields is required !" });
         }
 
         //if user_id is received then 
 
-        const fetch_name = await userModel.findOne({user_id:user_id},{
-            name:1,_id:0
+        const fetch_name = await userModel.findOne({ user_id: user_id }, {
+            name: 1, _id: 0
         });
 
-        if(!fetch_name){
-            return res.status(404).json({msg:"Invalid user_id !"});
+        if (!fetch_name) {
+            return res.status(404).json({ msg: "Invalid user_id !" });
         }
 
-        return res.status(200).json({msg:"Data fetched successfully !", data:fetch_name});
+        return res.status(200).json({ msg: "Data fetched successfully !", data: fetch_name });
 
     } catch (error) {
         console.error(`Error from the get the referral name and error is the ${error}`);
     }
 })
+
+
+
+//api for the proceed to checkout 
+UsersRouter.get('/checkout-coin-data/:user_id', async (req, res) => {
+    try {
+        const { user_id } = req.params;
+
+        if (!user_id) {
+            return res.status(400).json({msg:"All fields is required"})
+        }
+
+        // if received from the query paramiter
+        
+        const get_total_cart_amount = await CartModel.find({user_id:user_id});
+        let total = 0;
+        get_total_cart_amount.forEach((item) => {
+            total+=item.sale_price
+        })
+
+        //10% of the total cart sale price 
+        let finalOffAmount = (total * 10) / 100;
+
+        return res.status(200).json({msg:"Data fetched successfully !", amount:finalOffAmount});
+
+
+    } catch (error) {
+        console.error(`Error from the getting checkout coin data`)
+    }
+})
+
+
+
+
+UsersRouter.post('/recharge-wallet', uploadPayment_SS.single('screenshot'), async (req, res) => {
+    try {
+        const {user_id, amount, utr} = req.body;
+
+        if(!req.file){
+            return res.status(400).json({msg:"Screenshots is required"}); 
+        }
+
+        const screenshot = req.file.path;
+        
+        if(!user_id || !amount || !utr || !screenshot){
+            return res.status(400).json({msg:"All fields is required !"});
+        }
+
+        const RechargeNow = new WalletModel({user_id, amount, utr, screenshot});
+        await RechargeNow.save();
+        return res.status(200).json({msg:'Recharge Successfully'});
+
+
+    } catch (error) {
+        console.error(`Error from the recharge wallet and error is ${error}`)
+    }
+})
+
 
 module.exports = UsersRouter;
