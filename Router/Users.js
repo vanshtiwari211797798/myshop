@@ -276,4 +276,13 @@ UsersRouter.post('/recharge-wallet', uploadPayment_SS.single('screenshot'), asyn
 })
 
 
+//Order Now
+// UsersRouter.post('/order-now/:id', async (req, res) => {
+//     try {
+        
+//     } catch (error) {
+//         console.error(`Error from the order now the producr and error is the ${error}`);
+//     }
+// })
+
 module.exports = UsersRouter;
