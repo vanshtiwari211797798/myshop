@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const router = require('./Router/Register');
 const UsersRouter = require('./Router/Users');
-const AdminRoute = require('./Router/Admin');
+const adminRouter = require('./Router/Admin');
 const ConnectData = require('./DB/db');
 const PORT = process.env.PORT || 5000;
 
@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use('/user', router);
 app.use('/users',UsersRouter);
-app.use('/admin',AdminRoute);
+app.use('/admin',adminRouter);
 
 
 
