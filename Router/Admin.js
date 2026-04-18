@@ -80,6 +80,24 @@ adminRouter.get('/get-product', async (_, res) => {
 })
 
 
+//get products by id
+adminRouter.get('/get-product-details/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+
+        if(!id){
+            return res.status(400).json({msg:"All fields is required"});
+        }
+
+        const fetData = await productModel.findById(id);
+        return res.status(200).json({msg:"Fetche success", data:fetData});
+
+    } catch (error) {
+        console.error(`Error from the getting product by id and error is the ${error}`)
+    }
+})
+
 //update product api
 adminRouter.put(
     '/update-product/:id',
@@ -169,6 +187,7 @@ adminRouter.get('/update-recharge-status/:id/:status', async (req, res) => {
         console.error(`Error from the update recharge sttaus from the admin and error is the ${error}`)
     }
 })
+
 
 
 
