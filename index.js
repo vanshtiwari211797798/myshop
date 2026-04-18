@@ -13,7 +13,7 @@ app.use(express.json());
 app.use('/user', router);
 app.use('/users',UsersRouter);
 app.use('/admin',adminRouter);
-
+app.use('/uploads', express.static('uploads'));
 
 
 ConnectData().then(() => {
