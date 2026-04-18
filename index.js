@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 5000;
 
 
 //here integrate the middleware
+
 app.use(express.json());
 app.use('/user', router);
 app.use('/users',UsersRouter);
